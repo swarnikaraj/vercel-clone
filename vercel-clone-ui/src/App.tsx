@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css'; // Import your CSS file
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FaLinkedin, FaEnvelope } from 'react-icons/fa';
 function App() {
   const [link, setLink] = useState<string>('');
   const [status, setStatus] = useState<string>('');
@@ -22,9 +24,32 @@ function App() {
       }
     }, 1000);
   };
+  const showToast = () => {
+    toast.error(
+      <>
+         If the site is not working, please contact me on{' '}
+        <a href="https://www.linkedin.com/in/swarnnika-raj-singh-a6731914b/" target="_blank" rel="noopener noreferrer">
+          <FaLinkedin /> 
+        </a>{' '}
+        or via email at{' '}
+        <a href="mailto:swarnikarajsingh@gmail.com">
+          <FaEnvelope /> 
+        </a>
+        . The reason could be due to an overdue AWS bill.
+      </>,
+      {
+        autoClose: false, 
+        closeOnClick: true,
+        draggable: true, 
+        position: 'top-right', 
+      }
+    );
+  };
 
+  useEffect(() => {showToast()},[])
   return (
     <div className="container">
+     <ToastContainer />
       <h1>Deploy your application with one click</h1>
       <form onSubmit={handleSubmit}>
         <input

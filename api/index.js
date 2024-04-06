@@ -49,6 +49,8 @@ app.post("/", async (req, res) => {
             environment: [
               { name: "GIT_REPO_URL", value: giturl },
               { name: "PROJECT_ID", value: projectSlug },
+              { name: "accessKeyId", value: process.env.accessKeyId },
+              { name: "secretAccessKey", value: process.env.secretAccessKey },
             ],
           },
         ],
