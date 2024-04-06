@@ -51,6 +51,10 @@ app.post("/", async (req, res) => {
               { name: "PROJECT_ID", value: projectSlug },
               { name: "accessKeyId", value: process.env.accessKeyId },
               { name: "secretAccessKey", value: process.env.secretAccessKey },
+              {
+                name: "REDIS_CONNECTION_STRING",
+                value: process.env.REDIS_CONNECTION_STRING,
+              },
             ],
           },
         ],
