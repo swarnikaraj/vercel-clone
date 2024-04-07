@@ -1,4 +1,4 @@
-Vercle-clone allow user to deploy any react application with its public github url via just one click.
+Vercle-clone allows users to input a GitHub repository URL, deploy the repository, and view deployment logs in real-time via WebSocket communication.
 Teck stack used : Nodejs, Docker, React app, Aws ECS, Aws ECR, AWs S3, AWs Lamda , redis.
 
 steps to setup in local
