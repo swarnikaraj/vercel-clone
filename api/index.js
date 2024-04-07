@@ -4,7 +4,7 @@ const { ECSClient, RunTaskCommand } = require("@aws-sdk/client-ecs");
 const app = express();
 const dotenv = require("dotenv");
 const http = require("http");
-
+const cors = require("cors");
 dotenv.config();
 const port = process.env.PORT;
 const socketPort = 9002;
@@ -50,10 +50,11 @@ const config = {
   CLUSTER: process.env.CLUSTER,
   TASK: process.env.TASK_DEFINITION,
 };
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post("/", async (req, res) => {
+app.post("/deploy", async (req, res) => {
   const { giturl, slug } = req.body;
 
   const projectSlug = slug ? slug : generateSlug();
