@@ -8,7 +8,6 @@ const publisher = new redisIntance(process.env.REDIS_CONNECTION_STRING);
 
 const PROJECT_ID = process.env.PROJECT_ID;
 
-
 const s3Client = new S3Client({
   region: "us-east-1",
   credentials: {
@@ -18,7 +17,7 @@ const s3Client = new S3Client({
 });
 
 function logPublisher(log) {
-  publisher.publish(`logs:${PROJECT_ID}`, JSON.stringify(log));
+  publisher.publish(`logs:${PROJECT_ID}`, JSON.stringify({ log }));
 }
 async function init() {
   console.log("excuting script.js");

@@ -6,6 +6,7 @@ import { FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import { FaSquareGithub } from "react-icons/fa6";
 import { io } from "socket.io-client";
 import axios from "axios";
+
 const socket = io("http://localhost:9002");
 function App() {
    const logContainerRef = useRef<HTMLElement>(null);
@@ -15,21 +16,8 @@ function App() {
   const [deployPreviewURL, setDeployPreviewURL] = useState<string | undefined>();
    const [projectId, setProjectId] = useState<string | undefined>();
  const [logs, setLogs] = useState<string[]>([]);
-  // const handleSubmit = (e:React.FormEvent) => {
-  //   e.preventDefault();
-  //   // Here, you can perform deployment logic
-  //   // For demonstration purposes, I'm just updating the status and progress
-  //   setStatus('Deployment in progress...');
-  //   let currentProgress = 0;
-  //   const interval = setInterval(() => {
-  //     currentProgress += 10;
-  //     setProgress(currentProgress);
-  //     if (currentProgress >= 100) {
-  //       clearInterval(interval);
-  //       setStatus('Deployment successful!');
-  //     }
-  //   }, 1000);
-  // };
+ 
+ 
   const isValidURL: boolean = useMemo(() => {
     if (!gitlink || gitlink.trim() === "") return false;
     const regex = new RegExp(
@@ -104,7 +92,8 @@ const handleClickDeploy = useCallback(async () => {
    const handleSocketIncommingMessage = useCallback((message: string) => {
     console.log(`[Incomming Socket Message]:`, typeof message, message);
     console.log(message,"message hu mai")
-    const log = JSON.parse(message);
+     const {log} = JSON.parse(message);
+    console.log(message, "log hu mai")
     setLogs((prev) => [...prev, log]);
     logContainerRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -150,20 +139,27 @@ const handleClickDeploy = useCallback(async () => {
             </p>
           </div>
         )}
+  
 
-       {logs.length > 0 && (
-          <div
-            className={`text-sm text-green-500 logs-container mt-5 border-green-500 border-2 rounded-lg p-4 h-[300px] overflow-y-auto`}
-          >
-            <pre className="flex flex-col gap-1">
+       {logs?.length>0 && (
+
+<div className="terminal">
+      <div className="terminal-header">Logs</div>
+      <div className="terminal-body">
+         <pre className="">
               {logs.map((log, i) => (
                 <code
+                className='terminal-line'
                   ref={logs.length - 1 === i ? logContainerRef : undefined}
                   key={i}
                 >{`> ${log}`}</code>
               ))}
             </pre>
-          </div>
+       
+      </div>
+    </div>
+
+         
         )}
     </div>
   );

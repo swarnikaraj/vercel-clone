@@ -14,17 +14,9 @@ const redisIntance = require("ioredis");
 const subscriber = new redisIntance(process.env.REDIS_CONNECTION_STRING);
 
 const socketServer = http.createServer();
-const io = new Server(socketServer, { cors: "*" });
+// const io = new Server(socketServer, { cors: "*" });
 
-async function initRedisSubscribe() {
-  console.log("subscribed to logs:PROJECT_ID");
-  subscriber.psubscribe("logs:*");
-  subscriber.on("pmessage", (pattern, channel, message) => {
-    // const [,projectId] = channel.split(":")
-    io.to(channel).emit("message", message);
-  });
-}
-initRedisSubscribe();
+const io = new Server({ cors: "*" });
 
 io.on("connection", (socket) => {
   console.log("a user connected asking for logs");
@@ -33,10 +25,9 @@ io.on("connection", (socket) => {
     socket.emit("message", `Joined ${channel}`);
     console.log("socket connected");
   });
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
 });
+
+io.listen(9002, () => console.log("Socket Server 9002"));
 
 const ecsClient = new ECSClient({
   region: "us-east-1",
@@ -109,11 +100,15 @@ app.post("/deploy", async (req, res) => {
     return res.json({ status: "error", message: err.message });
   }
 });
-
+async function initRedisSubscribe() {
+  console.log("subscribed to logs:PROJECT_ID");
+  subscriber.psubscribe("logs:*");
+  subscriber.on("pmessage", (pattern, channel, message) => {
+    // const [,projectId] = channel.split(":")
+    io.to(channel).emit("message", message);
+  });
+}
+initRedisSubscribe();
 app.listen(port, () => {
   console.log(`server running at http://localhost:${port}`);
-});
-
-socketServer.listen(socketPort, () => {
-  console.log(`Socket server running at http://localhost:${socketPort}`);
 });
