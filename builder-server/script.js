@@ -1,11 +1,14 @@
 const { exec } = require("child_process");
 const path = require("path");
 const fs = require("fs");
-const redisIntance = require("ioredis");
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-const PROJECT_ID = process.env.PROJECT_ID;
 const mime = require("mime-types");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const redisIntance = require("ioredis");
 const publisher = new redisIntance(process.env.REDIS_CONNECTION_STRING);
+
+const PROJECT_ID = process.env.PROJECT_ID;
+
+
 const s3Client = new S3Client({
   region: "us-east-1",
   credentials: {

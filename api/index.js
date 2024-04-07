@@ -3,8 +3,41 @@ const { generateSlug } = require("random-word-slugs");
 const { ECSClient, RunTaskCommand } = require("@aws-sdk/client-ecs");
 const app = express();
 const dotenv = require("dotenv");
+const http = require("http");
+
 dotenv.config();
 const port = process.env.PORT;
+const socketPort = 9002;
+const { Server } = require("socket.io");
+
+const redisIntance = require("ioredis");
+const subscriber = new redisIntance(process.env.REDIS_CONNECTION_STRING);
+
+const socketServer = http.createServer();
+const io = new Server(socketServer, { cors: "*" });
+
+async function initRedisSubscribe() {
+  console.log("subscribed to logs:PROJECT_ID");
+  subscriber.psubscribe("logs:*");
+  subscriber.on("pmessage", (pattern, channel, message) => {
+    // const [,projectId] = channel.split(":")
+    io.to(channel).emit("message", message);
+  });
+}
+initRedisSubscribe();
+
+io.on("connection", (socket) => {
+  console.log("a user connected asking for logs");
+  socket.on("subscribe", (channel) => {
+    socket.join(channel);
+    socket.emit("message", `Joined ${channel}`);
+    console.log("socket connected");
+  });
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
 const ecsClient = new ECSClient({
   region: "us-east-1",
   credentials: {
@@ -18,10 +51,13 @@ const config = {
   TASK: process.env.TASK_DEFINITION,
 };
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.post("/", async (req, res) => {
-  const { giturl } = req.body;
-  const projectSlug = generateSlug();
+  const { giturl, slug } = req.body;
+
+  const projectSlug = slug ? slug : generateSlug();
+
   try {
     const command = new RunTaskCommand({
       cluster: config.CLUSTER,
@@ -74,5 +110,9 @@ app.post("/", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`server running at http://localhost:${port}`);
+});
+
+socketServer.listen(socketPort, () => {
+  console.log(`Socket server running at http://localhost:${socketPort}`);
 });

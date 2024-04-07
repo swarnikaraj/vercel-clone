@@ -11,13 +11,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-  
     "@aws-sdk/client-ecs": "^3.511.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "install": "^0.13.0",
+    "ioredis": "^5.3.2",
     "nodemon": "^3.1.0",
     "npm": "^10.5.1",
-    "random-word-slugs": "^0.1.7"
+    "random-word-slugs": "^0.1.7",
+    "socket.io": "^4.7.5"
   }
 }
